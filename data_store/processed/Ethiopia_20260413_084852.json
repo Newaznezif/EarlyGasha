@@ -1,0 +1,20 @@
+{
+  "region": "Ethiopia",
+  "timestamp": "2026-04-13",
+  "climate": {
+    "rainfall": -999.0,
+    "temperature": -999.0,
+    "humidity": -999.0
+  },
+  "food": {
+    "inflation_rate": null,
+    "food_price_index": null
+  },
+  "health": {
+    "outbreak_events": []
+  },
+  "conflict": {
+    "incident_count": null,
+    "displacement_events": null
+  }
+}

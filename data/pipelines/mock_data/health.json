@@ -1,0 +1,16 @@
+[
+  {"region": "Burundi", "outbreaks": 1, "cases": 12, "severity": 0.1},
+  {"region": "Chad", "outbreaks": 3, "cases": 85, "severity": 0.4},
+  {"region": "Central African Republic", "outbreaks": 5, "cases": 200, "severity": 0.7},
+  {"region": "DR Congo", "outbreaks": 12, "cases": 1500, "severity": 0.9},
+  {"region": "Djibouti", "outbreaks": 0, "cases": 0, "severity": 0.0},
+  {"region": "Eritrea", "outbreaks": 1, "cases": 5, "severity": 0.1},
+  {"region": "Ethiopia", "outbreaks": 2, "cases": 150, "severity": 0.4},
+  {"region": "Kenya", "outbreaks": 1, "cases": 45, "severity": 0.2},
+  {"region": "Rwanda", "outbreaks": 0, "cases": 0, "severity": 0.0},
+  {"region": "Somalia", "outbreaks": 4, "cases": 320, "severity": 0.6},
+  {"region": "South Sudan", "outbreaks": 6, "cases": 500, "severity": 0.7},
+  {"region": "Sudan", "outbreaks": 8, "cases": 1200, "severity": 0.8},
+  {"region": "Tanzania", "outbreaks": 1, "cases": 10, "severity": 0.1},
+  {"region": "Uganda", "outbreaks": 2, "cases": 40, "severity": 0.2}
+]

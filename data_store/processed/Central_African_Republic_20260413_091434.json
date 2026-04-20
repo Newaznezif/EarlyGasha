@@ -1,0 +1,20 @@
+{
+  "region": "Central African Republic",
+  "timestamp": "2026-04-13",
+  "climate": {
+    "rainfall": null,
+    "temperature": null,
+    "humidity": null
+  },
+  "food": {
+    "inflation_rate": 1.47733600718743,
+    "food_price_index": null
+  },
+  "health": {
+    "outbreak_events": []
+  },
+  "conflict": {
+    "incident_count": null,
+    "displacement_events": null
+  }
+}

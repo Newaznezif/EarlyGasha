@@ -1,0 +1,16 @@
+[
+  {"region": "Burundi", "rainfall": 65.4, "temp": 22.8, "drought_index": 0.2, "source": "MOCK"},
+  {"region": "Chad", "rainfall": 12.0, "temp": 35.5, "drought_index": 0.8, "source": "MOCK"},
+  {"region": "Central African Republic", "rainfall": 95.0, "temp": 25.0, "drought_index": 0.1, "source": "MOCK"},
+  {"region": "DR Congo", "rainfall": 120.0, "temp": 26.0, "drought_index": 0.0, "source": "MOCK"},
+  {"region": "Djibouti", "rainfall": 5.0, "temp": 38.0, "drought_index": 0.9, "source": "MOCK"},
+  {"region": "Eritrea", "rainfall": 15.0, "temp": 33.0, "drought_index": 0.7, "source": "MOCK"},
+  {"region": "Ethiopia", "rainfall": 45.2, "temp": 24.5, "drought_index": 0.2, "source": "MOCK"},
+  {"region": "Kenya", "rainfall": 30.1, "temp": 28.2, "drought_index": 0.5, "source": "MOCK"},
+  {"region": "Rwanda", "rainfall": 70.1, "temp": 21.5, "drought_index": 0.2, "source": "MOCK"},
+  {"region": "Somalia", "rainfall": 10.5, "temp": 32.1, "drought_index": 0.8, "source": "MOCK"},
+  {"region": "South Sudan", "rainfall": 20.2, "temp": 30.4, "drought_index": 0.6, "source": "MOCK"},
+  {"region": "Sudan", "rainfall": 18.0, "temp": 34.0, "drought_index": 0.7, "source": "MOCK"},
+  {"region": "Tanzania", "rainfall": 55.0, "temp": 26.5, "drought_index": 0.3, "source": "MOCK"},
+  {"region": "Uganda", "rainfall": 80.4, "temp": 23.1, "drought_index": 0.1, "source": "MOCK"}
+]

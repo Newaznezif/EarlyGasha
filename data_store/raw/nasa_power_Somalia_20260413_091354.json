@@ -1,0 +1,79 @@
+{
+  "type": "Feature",
+  "geometry": {
+    "type": "Point",
+    "coordinates": [
+      46.19,
+      5.15,
+      223.5
+    ]
+  },
+  "properties": {
+    "parameter": {
+      "PRECTOTCORR": {
+        "20260406": 0.12,
+        "20260407": 0.15,
+        "20260408": 0.66,
+        "20260409": 0.42,
+        "20260410": 0.34,
+        "20260411": -999.0,
+        "20260412": -999.0,
+        "20260413": -999.0
+      },
+      "T2M": {
+        "20260406": 31.19,
+        "20260407": 31.34,
+        "20260408": 31.34,
+        "20260409": 31.29,
+        "20260410": 31.22,
+        "20260411": -999.0,
+        "20260412": -999.0,
+        "20260413": -999.0
+      },
+      "RH2M": {
+        "20260406": 52.19,
+        "20260407": 50.01,
+        "20260408": 53.22,
+        "20260409": 52.98,
+        "20260410": 53.84,
+        "20260411": -999.0,
+        "20260412": -999.0,
+        "20260413": -999.0
+      }
+    }
+  },
+  "header": {
+    "title": "NASA/POWER Source Native Resolution Daily Data",
+    "api": {
+      "version": "v2.8.10",
+      "name": "POWER Daily API"
+    },
+    "sources": [
+      "GEOSIT",
+      "POWER"
+    ],
+    "fill_value": -999.0,
+    "time_standard": "LST",
+    "start": "20260406",
+    "end": "20260413"
+  },
+  "messages": [],
+  "parameters": {
+    "PRECTOTCORR": {
+      "units": "mm/day",
+      "longname": "Precipitation Corrected"
+    },
+    "T2M": {
+      "units": "C",
+      "longname": "Temperature at 2 Meters"
+    },
+    "RH2M": {
+      "units": "%",
+      "longname": "Relative Humidity at 2 Meters"
+    }
+  },
+  "times": {
+    "data": 0.353,
+    "process": 0.01
+  }
+}

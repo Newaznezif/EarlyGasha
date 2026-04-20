@@ -1,0 +1,16 @@
+[
+  {"region": "Burundi", "staple_price": 120, "price_index": 1.1, "source": "MOCK"},
+  {"region": "Chad", "staple_price": 250, "price_index": 1.5, "source": "MOCK"},
+  {"region": "Central African Republic", "staple_price": 300, "price_index": 1.8, "source": "MOCK"},
+  {"region": "DR Congo", "staple_price": 280, "price_index": 1.6, "source": "MOCK"},
+  {"region": "Djibouti", "staple_price": 400, "price_index": 2.0, "source": "MOCK"},
+  {"region": "Eritrea", "staple_price": 350, "price_index": 1.9, "source": "MOCK"},
+  {"region": "Ethiopia", "staple_price": 150, "price_index": 1.2, "source": "MOCK"},
+  {"region": "Kenya", "staple_price": 110, "price_index": 1.05, "source": "MOCK"},
+  {"region": "Rwanda", "staple_price": 130, "price_index": 1.15, "source": "MOCK"},
+  {"region": "Somalia", "staple_price": 310, "price_index": 1.7, "source": "MOCK"},
+  {"region": "South Sudan", "staple_price": 450, "price_index": 2.5, "source": "MOCK"},
+  {"region": "Sudan", "staple_price": 500, "price_index": 3.0, "source": "MOCK"},
+  {"region": "Tanzania", "staple_price": 95, "price_index": 0.95, "source": "MOCK"},
+  {"region": "Uganda", "staple_price": 85, "price_index": 0.9, "source": "MOCK"}
+]

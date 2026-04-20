@@ -1,0 +1,14 @@
+fastapi
+uvicorn
+sqlalchemy
+pydantic
+pandas
+scikit-learn
+requests
+streamlit
+plotly
+geopandas
+folium
+streamlit-folium
+python-dotenv
+prophet

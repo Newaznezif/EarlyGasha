@@ -1,0 +1,55 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+.env
+.venv
+venv/
+ENV/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Databases
+*.sqlite3
+*.db
+
+# Logs
+*.log
+backend_log.txt
+backend_refactor_log.txt
+port_check.txt
+ps_test.txt
+test_output.txt
+
+# Node
+node_modules/
+dist/
+frontend/dist/
+
+# IDEs
+.vscode/
+.idea/
+
+# PDF/Reports
+*.pdf
+# reports/

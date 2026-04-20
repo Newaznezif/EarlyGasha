@@ -1,0 +1,129 @@
+@import "tailwindcss";
+
+@theme {
+  --color-risk-low: #2ea043;
+  --color-risk-medium: #d29922;
+  --color-risk-high: #db6d28;
+  --color-risk-critical: #f85149;
+}
+
+:root {
+  --color-risk-low: #2ea043;
+  --color-risk-medium: #d29922;
+  --color-risk-high: #db6d28;
+  --color-risk-critical: #f85149;
+  
+  --primary: #3b82f6; 
+  --primary-hover: #2563eb;
+}
+
+:root.light {
+  --bg-main: #f8fafc;
+  --bg-card: #ffffff;
+  --text-main: #0f172a;
+  --text-muted: #64748b;
+  --border-color: rgba(0,0,0,0.1);
+  --glass-bg: rgba(255, 255, 255, 0.7);
+  --glass-hover: rgba(255, 255, 255, 0.9);
+}
+
+:root.dark {
+  --bg-main: #0f172a;
+  --bg-card: #1e293b;
+  --text-main: #f1f5f9;
+  --text-muted: #94a3b8;
+  --border-color: rgba(255, 255, 255, 0.1);
+  --glass-bg: rgba(30, 41, 59, 0.5);
+  --glass-hover: rgba(30, 41, 59, 0.8);
+}
+
+html, body, #root {
+  min-height: 100%;
+  margin: 0;
+  background-color: var(--bg-main);
+  color: var(--text-main);
+  font-family: 'Inter', sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  overflow-x: hidden;
+}
+
+/* Glassmorphism contextual cards */
+.glass-card {
+  background-color: var(--glass-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border-color);
+  border-radius: 1rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.glass-card:hover {
+  background-color: var(--glass-hover);
+  border-color: var(--primary);
+}
+
+/* Map Alert Animations */
+@keyframes pulse-critical {
+  0% { opacity: 0.8; stroke-width: 4; transform: scale(1); }
+  50% { opacity: 1; stroke-width: 8; transform: scale(1.05); }
+  100% { opacity: 0.8; stroke-width: 4; transform: scale(1); }
+}
+@keyframes pulse-high {
+  0% { filter: drop-shadow(0 0 5px orange); opacity: 0.6; }
+  50% { filter: drop-shadow(0 0 15px orange); opacity: 0.9; }
+  100% { filter: drop-shadow(0 0 5px orange); opacity: 0.6; }
+}
+
+.marker-critical {
+  animation: pulse-critical 1.5s infinite ease-in-out;
+  transform-origin: center;
+  transform-box: fill-box;
+}
+
+.marker-high {
+  animation: pulse-high 2s infinite ease-in-out;
+}
+
+.marker-watch {
+  stroke-dasharray: 4;
+  animation: dash 5s linear infinite;
+}
+
+@keyframes dash {
+  to {
+    stroke-dashoffset: 24;
+  }
+}
+
+/* Base utility overrides */
+.bg-element { background-color: var(--bg-card); }
+.bg-element-hover { background-color: var(--border-color); }
+.border-edge { border-color: var(--border-color); }
+.text-default { color: var(--text-main); }
+.text-muted { color: var(--text-muted); }
+.text-primary { color: var(--primary); }
+.bg-primary { background-color: var(--primary); }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in {
+  animation: fadeIn 0.4s ease-out forwards;
+}
+
+/* Map override for Theme compliance */
+.leaflet-container {
+    height: 100% !important;
+    width: 100% !important;
+    background: transparent !important;
+    border-radius: inherit;
+    z-index: 10;
+}
+/* Silent Mode Utility */
+.silent-mode, .silent-mode * {
+    animation: none !important;
+    transition: none !important;
+}

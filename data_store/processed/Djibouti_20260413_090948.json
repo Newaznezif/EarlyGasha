@@ -1,0 +1,20 @@
+{
+  "region": "Djibouti",
+  "timestamp": "2026-04-13",
+  "climate": {
+    "rainfall": null,
+    "temperature": null,
+    "humidity": null
+  },
+  "food": {
+    "inflation_rate": 2.1120116728497,
+    "food_price_index": null
+  },
+  "health": {
+    "outbreak_events": []
+  },
+  "conflict": {
+    "incident_count": null,
+    "displacement_events": null
+  }
+}
