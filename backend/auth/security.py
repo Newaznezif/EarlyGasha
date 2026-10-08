@@ -1,11 +1,18 @@
 from datetime import datetime, timedelta
 from typing import Optional
+import os
 import jwt
 import bcrypt
 
-SECRET_KEY = "earlygasha-super-secret-key-change-in-prod"
+SECRET_KEY = os.getenv("SECRET_KEY", "development-only-secret-do-not-use-in-production")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 24 * 60
+
+if os.getenv("APP_ENV", "development").lower() == "production":
+    if not os.getenv("SECRET_KEY"):
+        raise RuntimeError("SECRET_KEY must be set when APP_ENV=production")
+    if len(SECRET_KEY) < 32:
+        raise RuntimeError("SECRET_KEY must contain at least 32 characters in production")
 
 def verify_password(plain_password, hashed_password):
     if isinstance(hashed_password, str):

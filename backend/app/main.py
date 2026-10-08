@@ -1,3 +1,5 @@
+import os
+
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.exceptions import RequestValidationError
@@ -25,8 +27,14 @@ def create_app() -> FastAPI:
     )
 
     # CORS MUST BE FIRST
+    cors_origins = [
+        origin.strip().rstrip("/")
+        for origin in os.getenv("CORS_ORIGINS", "").split(",")
+        if origin.strip()
+    ]
     app.add_middleware(
         CORSMiddleware,
+        allow_origins=cors_origins,
         allow_origin_regex="https?://(localhost|127\\.0\\.0\\.1)(:\\d+)?",
         allow_credentials=True,
         allow_methods=["*"],
@@ -58,19 +66,31 @@ def create_app() -> FastAPI:
         models.Base.metadata.create_all(bind=engine)
         auth_models.Base.metadata.create_all(bind=engine)
         
+        bootstrap_email = os.getenv("BOOTSTRAP_ADMIN_EMAIL")
+        bootstrap_password = os.getenv("BOOTSTRAP_ADMIN_PASSWORD")
+        if bool(bootstrap_email) != bool(bootstrap_password):
+            raise RuntimeError(
+                "Set both BOOTSTRAP_ADMIN_EMAIL and BOOTSTRAP_ADMIN_PASSWORD to provision an admin"
+            )
+        if bootstrap_password and len(bootstrap_password) < 12:
+            raise RuntimeError("BOOTSTRAP_ADMIN_PASSWORD must contain at least 12 characters")
+
         print("BOOTSTRAP: Stage 2 - Establishing Identity Link...")
         db = SessionLocal()
         try:
-            admin_user = db.query(auth_models.User).filter(auth_models.User.email == "admin@earlygasha.local").first()
-            if not admin_user:
-                print("BOOTSTRAP: Stage 3 - Provisioning Initial Command Authority...")
-                seed_admin = auth_models.User(
-                    email="admin@earlygasha.local",
-                    hashed_password=get_password_hash("Admin@123"),
-                    role="system_admin"
-                )
-                db.add(seed_admin)
-                db.commit()
+            if bootstrap_email:
+                admin_user = db.query(auth_models.User).filter(
+                    auth_models.User.email == bootstrap_email
+                ).first()
+                if not admin_user:
+                    print("BOOTSTRAP: Stage 3 - Provisioning Initial Command Authority...")
+                    seed_admin = auth_models.User(
+                        email=bootstrap_email,
+                        hashed_password=get_password_hash(bootstrap_password),
+                        role="system_admin"
+                    )
+                    db.add(seed_admin)
+                    db.commit()
             
             # System Status Report
             region_count = db.query(models.Region).count()

@@ -75,17 +75,6 @@ const Login = () => {
           </div>
         )}
 
-        <div className="bg-emerald-500/5 border border-emerald-500/20 p-4 rounded-xl flex flex-col gap-2">
-           <h4 className="text-[10px] font-black uppercase tracking-widest text-emerald-500 flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" /> Bootstrap Admin Account
-           </h4>
-           <div className="text-[11px] text-[#64748b] font-medium flex flex-col gap-1">
-              <p><span className="text-emerald-500/80">ID:</span> admin@earlygasha.local</p>
-              <p><span className="text-emerald-500/80">KEY:</span> Admin@123</p>
-           </div>
-           <p className="text-[9px] text-[#3a3a41] italic font-bold">Recommended for initial tactical deployment only.</p>
-        </div>
-
         <form onSubmit={handleLogin} className="space-y-6">
           <div className="space-y-2">
             <label className="text-[10px] font-black uppercase tracking-widest text-[#64748b]">Operator ID</label>

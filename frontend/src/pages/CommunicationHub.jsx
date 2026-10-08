@@ -8,7 +8,7 @@ import {
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
-import api from '../auth/api';
+import api, { getWebSocketUrl } from '../auth/api';
 
 const Card = ({ children, className = "" }) => (
   <div className={`glass-card overflow-hidden relative group transition-all duration-500 ${className}`}>
@@ -94,8 +94,7 @@ export default function CommunicationHub() {
   const connectWebSocket = (roomId) => {
     if (wsRef.current) wsRef.current.close();
     
-    // In local dev, ws://localhost:8000, in prod it should be dynamic
-    const wsUrl = `ws://localhost:8000/ws/chat/${roomId}`;
+    const wsUrl = getWebSocketUrl(`/ws/chat/${roomId}`);
     const ws = new WebSocket(wsUrl);
     wsRef.current = ws;
 

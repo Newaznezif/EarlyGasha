@@ -1,9 +1,18 @@
 import axios from 'axios';
 
-const API_BASE = 'http://127.0.0.1:8000';
+export const API_BASE_URL = (
+  import.meta.env.VITE_API_BASE_URL
+  || (import.meta.env.DEV ? 'http://127.0.0.1:8000' : '')
+).replace(/\/+$/, '');
+
+export const getWebSocketUrl = (path) => {
+  const url = new URL(path, API_BASE_URL || window.location.origin);
+  url.protocol = url.protocol === 'https:' ? 'wss:' : 'ws:';
+  return url.toString();
+};
 
 const api = axios.create({
-  baseURL: API_BASE,
+  baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
   },

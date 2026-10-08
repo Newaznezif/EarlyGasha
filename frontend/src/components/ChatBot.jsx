@@ -1,8 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
-import axios from 'axios';
 import { MessageSquare, Send, X, Bot, User, Loader2 } from 'lucide-react';
-
-const API_BASE = 'http://localhost:8000';
+import api from '../auth/api';
 
 const ChatBot = () => {
     const [isOpen, setIsOpen] = useState(false);
@@ -30,9 +28,9 @@ const ChatBot = () => {
         setLoading(true);
 
         try {
-            const response = await axios.post(`${API_BASE}/chat`, { message: input });
+            const response = await api.post('/chat', { message: input });
             setMessages(prev => [...prev, { role: 'bot', content: response.data.response }]);
-        } catch (error) {
+        } catch {
             setMessages(prev => [...prev, { role: 'bot', content: 'Sorry, I am having trouble connecting to the intelligence engine.' }]);
         } finally {
             setLoading(false);

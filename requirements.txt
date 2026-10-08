@@ -1,6 +1,9 @@
 fastapi
 uvicorn
 sqlalchemy
+psycopg[binary]
+PyJWT
+bcrypt
 pydantic
 pandas
 scikit-learn
@@ -12,3 +15,5 @@ folium
 streamlit-folium
 python-dotenv
 prophet
+fpdf2
+matplotlib

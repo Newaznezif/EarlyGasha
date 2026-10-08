@@ -14,7 +14,7 @@ import ProfileModal from '../components/ProfileModal';
 import FieldReportForm from '../components/FieldReportForm';
 import { useAuth } from '../auth/AuthContext';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import api from '../auth/api';
+import api, { API_BASE_URL } from '../auth/api';
 import OperationalSummary from '../components/OperationalSummary';
 import CommandBriefing from '../components/CommandBriefing';
 
@@ -262,7 +262,7 @@ export default function Dashboard() {
            <ReportEngine regions={data} selectedRegion={intelligence} />
            <ScenarioSimulator 
               regionName={intelligence.region} 
-              apiBase={`http://localhost:8000`} 
+              apiBase={API_BASE_URL}
               onSimulateResult={(res) => setIntelligence({...intelligence, risk_score: res.simulated_risk})}
               onReset={() => fetchIntelligence(intelligence.region)}
             />
@@ -678,7 +678,7 @@ export default function Dashboard() {
                     {!demoLock ? (
                         <ScenarioSimulator 
                           regionName={intelligence.region} 
-                          apiBase={`http://localhost:8000`} 
+                          apiBase={API_BASE_URL}
                           onSimulateResult={(res) => {
                             setData(prev => prev.map(r => 
                               r.region === res.region 
