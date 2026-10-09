@@ -35,15 +35,15 @@ def get_command_briefing(db: Session = Depends(get_db), current_user: User = Dep
         else:
             condition = "No region currently meets the local model's critical weather-screening threshold."
         briefing_text = (
-            f"Live Open-Meteo observations are available for {len(live_regions)} of {len(regions)} Ethiopian regions. "
-            f"{condition} Latest observation: {latest_observation}. "
-            "This is preliminary weather screening, not an official forecast or emergency alert."
+            f"{len(live_regions)} of {len(regions)} Ethiopian regions have recent Open-Meteo weather data. "
+            f"{condition} Screening only; not an official forecast or emergency alert."
         )
         highest_region = max(regions, key=lambda region: region["risk_score"])
         priority = f"{highest_region['region']}: {highest_region['risk_level']} weather screening"
 
     return {
         "timestamp": datetime.utcnow().isoformat(),
+        "observed_at": latest_observation,
         "briefing_narrative": briefing_text,
         "priority_vulnerability": priority,
         "recommended_action": "Review current Open-Meteo observations and local screening indicators",

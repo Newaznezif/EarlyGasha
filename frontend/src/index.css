@@ -13,28 +13,28 @@
   --color-risk-high: #db6d28;
   --color-risk-critical: #f85149;
   
-  --primary: #3b82f6; 
-  --primary-hover: #2563eb;
+  --primary: #18764c;
+  --primary-hover: #145f3d;
 }
 
 :root.light {
-  --bg-main: #f8fafc;
+  --bg-main: #f3f5f2;
   --bg-card: #ffffff;
-  --text-main: #0f172a;
-  --text-muted: #64748b;
-  --border-color: rgba(0,0,0,0.1);
-  --glass-bg: rgba(255, 255, 255, 0.7);
-  --glass-hover: rgba(255, 255, 255, 0.9);
+  --text-main: #1d2b24;
+  --text-muted: #66756d;
+  --border-color: #dce3dd;
+  --glass-bg: #ffffff;
+  --glass-hover: #ffffff;
 }
 
 :root.dark {
-  --bg-main: #0f172a;
-  --bg-card: #1e293b;
-  --text-main: #f1f5f9;
-  --text-muted: #94a3b8;
-  --border-color: rgba(255, 255, 255, 0.1);
-  --glass-bg: rgba(30, 41, 59, 0.5);
-  --glass-hover: rgba(30, 41, 59, 0.8);
+  --bg-main: #111a15;
+  --bg-card: #1a261e;
+  --text-main: #edf3ee;
+  --text-muted: #a6b5aa;
+  --border-color: #334339;
+  --glass-bg: #1a261e;
+  --glass-hover: #1a261e;
 }
 
 html, body, #root {
@@ -47,20 +47,16 @@ html, body, #root {
   overflow-x: hidden;
 }
 
-/* Glassmorphism contextual cards */
+/* Shared application surfaces */
 .glass-card {
   background-color: var(--glass-bg);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--border-color);
-  border-radius: 1rem;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 2px rgba(24, 40, 29, 0.05);
 }
 
 .glass-card:hover {
   background-color: var(--glass-hover);
-  border-color: var(--primary);
 }
 
 /* Map Alert Animations */
