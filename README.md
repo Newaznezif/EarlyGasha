@@ -45,6 +45,10 @@ An initial administrator is created only when both `BOOTSTRAP_ADMIN_EMAIL` and `
 
 Vercel's static frontend deployment does not deploy this FastAPI service or its database. Deploy the backend separately on a Python/container host with persistent PostgreSQL, set its `DATABASE_URL` and `CORS_ORIGINS`, then set the Vercel `VITE_API_BASE_URL` to that service's public HTTPS origin and redeploy the frontend. SQLite on an ephemeral serverless filesystem is not suitable for persistent production data. The current API also includes WebSockets, so choose a backend host that supports long-lived WebSocket connections.
 
+### Render Backend Deployment
+
+The repository includes a Render Blueprint in `render.yaml`. In Render, create a Blueprint from this GitHub repository and connect it to a persistent PostgreSQL database before deploying. Add the database's internal connection URL as `DATABASE_URL`; Render will generate `SECRET_KEY`. The service allows the production Vercel origin through `CORS_ORIGINS` and checks `/health`. After deployment, copy the service's public HTTPS URL to Vercel as `VITE_API_BASE_URL`, then redeploy the frontend. The free web-service plan may sleep when idle, so the first API request can be delayed; verify current database pricing/retention before choosing a PostgreSQL provider.
+
 ## Validation
 
 From `frontend/`, run `npm ci`, `npm run build`, and `npm run lint`. From the repository root, run available Python tests after installing `requirements.txt`.
