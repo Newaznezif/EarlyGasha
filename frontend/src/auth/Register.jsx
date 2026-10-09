@@ -33,7 +33,7 @@ const Register = () => {
     } catch (err) {
       console.error(err);
       const detail = err.response?.data?.detail;
-      let errorMsg = "Unable to create your account. Please try again.";
+      let errorMsg = err.message || "Unable to create your account. Please try again.";
       
       if (typeof detail === 'string') {
         errorMsg = detail;
@@ -62,7 +62,7 @@ const Register = () => {
       else if (user.role === 'field_officer') navigate('/field');
       else navigate('/dashboard');
     } catch (err) {
-      setError(err.response?.data?.detail || 'Google sign-in failed. Please try again.');
+      setError(err.response?.data?.detail || err.message || 'Google sign-in failed. Please try again.');
     } finally {
       setIsLoading(false);
     }

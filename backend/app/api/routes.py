@@ -10,6 +10,7 @@ from ..services.report_service import ReportService
 from ..services.chatbot_service import ChatbotService
 from fastapi.responses import FileResponse, JSONResponse
 from pydantic import BaseModel
+from ..services.ethiopia_monitoring import load_ethiopia_boundaries
 
 class SimulationRequest(BaseModel):
     rainfall_change: float
@@ -41,6 +42,13 @@ def simulate_scenario(region: str, req: SimulationRequest, db: Session = Depends
 @router.get("/health")
 def health_check():
     return {"status": "ok", "service": "EarlyGasha Intelligence API", "timestamp": datetime.now().isoformat()}
+
+@router.get("/ethiopia/boundaries")
+def get_ethiopia_boundaries():
+    return JSONResponse(
+        content=load_ethiopia_boundaries(),
+        headers={"Cache-Control": "public, max-age=86400"},
+    )
 
 @router.get("/system/health")
 def system_health_check(db: Session = Depends(get_db)):
@@ -151,10 +159,16 @@ def get_intelligence(region: str, db: Session = Depends(get_db)):
 def get_overview(db: Session = Depends(get_db)):
     service = RiskEngineService(db)
     ranked_list = service.get_overview()
+    observed_at = max(
+        (item["observed_at"] for item in ranked_list if item.get("observed_at")),
+        default=None,
+    )
     data = {
         "count": len(ranked_list),
         "ranked_list": ranked_list,
-        "timestamp": datetime.now().strftime("%Y-%m-%d")
+        "timestamp": datetime.now().strftime("%Y-%m-%d"),
+        "observed_at": observed_at,
+        "data_source": "Open-Meteo",
     }
     return JSONResponse(content=data, headers={"Cache-Control": "no-store"})
 

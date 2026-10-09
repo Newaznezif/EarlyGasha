@@ -3,7 +3,6 @@ import os
 import numpy as np
 from typing import Dict
 from datetime import datetime
-from functools import lru_cache
 
 class RiskEngineService:
     """
@@ -13,15 +12,8 @@ class RiskEngineService:
     def __init__(self, db_session):
         self.db = db_session
 
-    @lru_cache(maxsize=32)
-    def _get_cached_intelligence(self, region_name: str, cache_key: str) -> Dict:
-        """Internal cached method for heavy intelligence computing"""
-        return self._compute_intelligence(region_name)
-
     def get_region_intelligence(self, region_name: str) -> Dict:
-        # Use a simple daily/hourly cache key based on the current timestamp
-        cache_key = datetime.now().strftime("%Y-%m-%d-%H") 
-        return self._get_cached_intelligence(region_name, cache_key)
+        return self._compute_intelligence(region_name)
 
     def _compute_intelligence(self, region_name: str) -> Dict:
         from backend import models
@@ -165,17 +157,49 @@ class RiskEngineService:
     def get_overview(self) -> list:
         from backend import models
         regions = self.db.query(models.Region).all()
+        indicators = (
+            self.db.query(models.Indicator)
+            .filter(models.Indicator.type.in_(["rainfall", "temperature", "humidity", "wind_speed"]))
+            .order_by(models.Indicator.timestamp.desc())
+            .all()
+        )
+        latest_indicators = {}
+        for indicator in indicators:
+            key = (indicator.region_id, indicator.type)
+            if key not in latest_indicators:
+                latest_indicators[key] = indicator
+
         overview = []
         
         for r in regions:
-            # Lighter weight overview calculation
-            # Just take the latest risk score from the DB instead of re-running ML pipelines
             latest_risk = self.db.query(models.RiskScore).filter(models.RiskScore.region_id == r.id).order_by(models.RiskScore.timestamp.desc()).first()
-            
-            risk_score = latest_risk.overall_score / 100 if latest_risk else 0.5
-            
-            # Simple level mapping
-            if risk_score < 0.3: level = "LOW"
+            observations = {
+                "rainfall_7d_mm": latest_indicators.get((r.id, "rainfall")),
+                "temperature_c": latest_indicators.get((r.id, "temperature")),
+                "humidity_percent": latest_indicators.get((r.id, "humidity")),
+                "wind_speed_kmh": latest_indicators.get((r.id, "wind_speed")),
+            }
+            observations = {
+                name: indicator.value if indicator else None
+                for name, indicator in observations.items()
+            }
+            timestamps = [
+                indicator.timestamp
+                for indicator_type in ("rainfall", "temperature", "humidity", "wind_speed")
+                if (indicator := latest_indicators.get((r.id, indicator_type))) is not None
+            ]
+            observed_at = max(timestamps).isoformat() if timestamps else None
+
+            has_weather_data = any(value is not None for value in observations.values())
+            intelligence = self._compute_intelligence(r.name) if has_weather_data else None
+            if intelligence:
+                risk_score = intelligence["risk_score"]
+            else:
+                risk_score = latest_risk.overall_score / 100 if latest_risk else 0.0
+
+            if not has_weather_data and not latest_risk:
+                level = "NO_DATA"
+            elif risk_score < 0.3: level = "LOW"
             elif risk_score < 0.6: level = "MEDIUM"
             elif risk_score < 0.8: level = "HIGH"
             else: level = "CRITICAL"
@@ -188,7 +212,10 @@ class RiskEngineService:
                 "lon": r.longitude,
                 "risk_score": risk_score,
                 "risk_level": level,
-                "trend": "STABLE" # Placeholder for overview
+                "trend": "STABLE",
+                "observations": observations,
+                "observed_at": observed_at,
+                "data_source": "Open-Meteo" if observed_at else None,
             })
         
         return sorted(overview, key=lambda x: x["risk_score"], reverse=True)

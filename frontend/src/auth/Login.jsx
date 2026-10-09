@@ -34,7 +34,7 @@ const Login = () => {
     } catch (err) {
       console.error(err);
       const detail = err.response?.data?.detail;
-      let errorMsg = "Unable to sign in. Please check your email and password.";
+      let errorMsg = err.message || "Unable to sign in. Please check your email and password.";
 
       if (typeof detail === 'string') {
         errorMsg = detail;
@@ -62,7 +62,7 @@ const Login = () => {
       else if (user.role === 'field_officer') navigate('/field');
       else navigate('/dashboard');
     } catch (err) {
-      setError(err.response?.data?.detail || 'Google sign-in failed. Please try again.');
+      setError(err.response?.data?.detail || err.message || 'Google sign-in failed. Please try again.');
     } finally {
       setIsLoading(false);
     }

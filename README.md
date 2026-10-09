@@ -48,3 +48,7 @@ Vercel's static frontend deployment does not deploy this FastAPI service or its 
 ## Validation
 
 From `frontend/`, run `npm ci`, `npm run build`, and `npm run lint`. From the repository root, run available Python tests after installing `requirements.txt`.
+
+## Ethiopia Live Monitoring
+
+The backend seeds Ethiopia's 11 first-level administrative regions from `data/ethiopia-admin1.geojson` (geoBoundaries / Open Africa / Code for Ethiopia, CC BY 4.0). It polls current weather and completed 7-day rainfall totals from the free Open-Meteo API at startup and every 15 minutes. The dashboard refreshes every five minutes and reports the observation time. These are weather-based screening indicators, not official forecasts or health/conflict reports.

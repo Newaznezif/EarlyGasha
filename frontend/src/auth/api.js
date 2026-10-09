@@ -20,6 +20,10 @@ const api = axios.create({
 
 // Automatically inject JWT into all outgoing requests
 api.interceptors.request.use((config) => {
+  if (!API_BASE_URL && !import.meta.env.DEV) {
+    return Promise.reject(new Error('The backend API is not configured. Set VITE_API_BASE_URL in Vercel project settings.'));
+  }
+
   const token = localStorage.getItem('token');
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;

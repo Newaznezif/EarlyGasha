@@ -1,11 +1,11 @@
 import React, { useContext } from 'react';
-import { MapContainer, TileLayer, CircleMarker, Popup, Tooltip } from 'react-leaflet';
+import { MapContainer, TileLayer, CircleMarker, GeoJSON, Tooltip } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import { ThemeContext } from '../context/ThemeContext';
 
-const RiskMap = ({ data, alerts = [], simplifiedMode = false, onRegionSelect, selectedRegion }) => {
+const RiskMap = ({ data, alerts = [], boundaries, simplifiedMode = false, onRegionSelect, selectedRegion }) => {
   const { isDark } = useContext(ThemeContext);
-  const center = [5.0, 38.0]; // Central East Africa
+  const center = [9.1, 39.6];
   
   // Calculate raw dynamic color interpolation instead of static categorical thresholds
   const getColor = (score) => {
@@ -13,9 +13,7 @@ const RiskMap = ({ data, alerts = [], simplifiedMode = false, onRegionSelect, se
     return `hsl(${hue}, 85%, 45%)`;
   };
 
-  const tileUrl = isDark 
-    ? "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-    : "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png";
+  const tileUrl = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
 
   return (
     <div className="h-full w-full relative z-0">
@@ -27,9 +25,21 @@ const RiskMap = ({ data, alerts = [], simplifiedMode = false, onRegionSelect, se
         style={{ height: '100%', width: '100%', minHeight: '500px' }}
       >
         <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url={tileUrl}
         />
+        {boundaries && (
+          <GeoJSON
+            data={boundaries}
+            attribution="Administrative boundaries: geoBoundaries / Open Africa / Code for Ethiopia (CC BY 4.0)"
+            style={{
+              color: isDark ? '#38bdf8' : '#0369a1',
+              weight: 1.5,
+              fillColor: isDark ? '#0ea5e9' : '#38bdf8',
+              fillOpacity: 0.06,
+            }}
+          />
+        )}
         {data.map((region, idx) => {
           const regionAlert = alerts.find(a => a.region.toLowerCase() === region.region.toLowerCase());
           const hasCriticalAlerts = alerts.some(a => a.alert_level === 'CRITICAL');
@@ -78,6 +88,13 @@ const RiskMap = ({ data, alerts = [], simplifiedMode = false, onRegionSelect, se
                         {region.score.toFixed(0)}%
                     </span>
                  </div>
+                 {region.observations && (
+                   <div className="px-1 pb-1 text-[10px] text-slate-600">
+                     {region.observations.temperature_c != null && <div>Temperature: {region.observations.temperature_c.toFixed(1)} C</div>}
+                     {region.observations.rainfall_7d_mm != null && <div>Rainfall, 7 days: {region.observations.rainfall_7d_mm.toFixed(1)} mm</div>}
+                     {region.observed_at && <div>Observed: {new Date(region.observed_at).toLocaleString()}</div>}
+                   </div>
+                 )}
               </Tooltip>
             </CircleMarker>
           );

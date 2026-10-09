@@ -45,7 +45,7 @@ export default function CommandBriefing() {
                     </div>
                     <div>
                         <h3 className="text-[10px] font-black uppercase text-primary tracking-[0.4em] mb-1">Tactical SitRep Briefing</h3>
-                        <p className="text-[9px] font-mono text-slate-500 uppercase">{new Date(briefing?.timestamp).toLocaleString()} // GLOBAL CORE SYNC</p>
+                        <p className="text-[9px] font-mono text-slate-500 uppercase">{new Date(briefing?.timestamp).toLocaleString()} // ETHIOPIA WEATHER SCREENING</p>
                     </div>
                 </div>
 

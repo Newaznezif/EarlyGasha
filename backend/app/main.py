@@ -18,6 +18,7 @@ from ..database import engine, SessionLocal
 from .. import models
 from ..auth import models as auth_models
 from ..auth.security import get_password_hash
+from .services.ethiopia_monitoring import seed_ethiopia_regions, start_ethiopia_monitoring
 
 def create_app() -> FastAPI:
     app = FastAPI(
@@ -65,6 +66,13 @@ def create_app() -> FastAPI:
         print("BOOTSTRAP: Stage 1 - Initializing Peripheral Schemas...")
         models.Base.metadata.create_all(bind=engine)
         auth_models.Base.metadata.create_all(bind=engine)
+
+        try:
+            region_count = seed_ethiopia_regions()
+            print(f"ETHIOPIA: {region_count} administrative regions ready for monitoring")
+            start_ethiopia_monitoring()
+        except Exception as e:
+            print(f"ETHIOPIA MONITORING INITIALIZATION FAILED: {e}")
         
         bootstrap_email = os.getenv("BOOTSTRAP_ADMIN_EMAIL")
         bootstrap_password = os.getenv("BOOTSTRAP_ADMIN_PASSWORD")

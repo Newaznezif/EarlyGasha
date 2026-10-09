@@ -33,6 +33,8 @@ export default function Dashboard() {
   const [compareMode, setCompareMode] = useState(false);
   const [loadingIntel, setLoadingIntel] = useState(false);
   const [alerts, setAlerts] = useState([]);
+  const [boundaries, setBoundaries] = useState(null);
+  const [observedAt, setObservedAt] = useState(null);
   const [simplifiedMode, setSimplifiedMode] = useState(false);
   const [demoLock, setDemoLock] = useState(false);
   const [loadingText, setLoadingText] = useState("Synchronizing Intelligence...");
@@ -134,6 +136,7 @@ export default function Dashboard() {
       }));
       setData(regionsList);
       setAlerts(alertsResponse.data.alerts || []);
+      setObservedAt(response.data.observed_at || null);
       
       // Layer 5: Lightweight Caching Layer
       if (cacheEnabled) {
@@ -168,6 +171,20 @@ export default function Dashboard() {
 
   useEffect(() => {
     fetchData();
+    const intervalId = window.setInterval(fetchData, 5 * 60 * 1000);
+    return () => window.clearInterval(intervalId);
+  }, []);
+
+  useEffect(() => {
+    let isMounted = true;
+    api.get('/ethiopia/boundaries')
+      .then((response) => {
+        if (isMounted) setBoundaries(response.data);
+      })
+      .catch((err) => console.error('Unable to load Ethiopia boundaries:', err));
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const criticalCount = data?.length ? data.filter(d => d.level === 'CRITICAL').length : 0;
@@ -498,6 +515,9 @@ export default function Dashboard() {
                     <h3 className="text-xs md:text-sm font-bold uppercase tracking-wider text-default drop-shadow-md">
                       {user?.role === 'community_user' ? 'Local Safety Map' : 'Live Risk Mapping'}
                     </h3>
+                    <p className="mt-1 text-[10px] text-muted">
+                      Open-Meteo weather{observedAt ? ` · updated ${new Date(observedAt).toLocaleTimeString()}` : ' · waiting for first observation'}
+                    </p>
                   </div>
           <div className="absolute top-4 right-4 z-[1000] flex gap-2">
 			{alerts.some(a => a.alert_level === 'CRITICAL') && !simplifiedMode && (
@@ -506,7 +526,7 @@ export default function Dashboard() {
 				</span>
 			)}
           </div>
-          <RiskMap data={filteredData} alerts={alerts} simplifiedMode={simplifiedMode || user?.role === 'community_user'} onRegionSelect={handleRegionSelect} />
+          <RiskMap data={filteredData} alerts={alerts} boundaries={boundaries} simplifiedMode={simplifiedMode || user?.role === 'community_user'} onRegionSelect={handleRegionSelect} />
           
           {user?.role !== 'community_user' && (
             <div className="absolute bottom-0 left-0 right-0 z-[1000] border-t border-edge bg-element/80 backdrop-blur-md">

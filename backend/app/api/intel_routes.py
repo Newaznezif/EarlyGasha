@@ -3,31 +3,49 @@ from sqlalchemy.orm import Session
 from ...database import get_db
 from ...auth.dependencies import get_current_user
 from ...auth.models import User
-from ...models import RiskScore, Region, CrisisAlert
+from ...models import CrisisAlert
+from ..services.risk_engine_service import RiskEngineService
 from datetime import datetime, timedelta
 
 router = APIRouter()
 
 @router.get("/command-briefing")
 def get_command_briefing(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
-    # Get high risk regions
-    critical_regions = db.query(RiskScore).filter(RiskScore.overall_score > 0.8).order_by(RiskScore.overall_score.desc()).limit(3).all()
-    active_alerts = db.query(CrisisAlert).limit(5).all()
-    
-    # Generate narrative briefing (simulated AI generation)
-    briefing_text = "GLOBAL SITUATIONAL SUMMARY: "
-    if critical_regions:
-        names = [db.query(Region).filter(Region.id == r.region_id).first().name for r in critical_regions]
-        briefing_text += f"CRITICAL alert status sustained in {', '.join(names)}. Risk vectors show high correlation with drought-induced displacement. "
+    regions = RiskEngineService(db).get_overview()
+    live_regions = [region for region in regions if region.get("observed_at")]
+    critical_regions = [region for region in regions if region["risk_level"] == "CRITICAL"]
+    latest_observation = max(
+        (region["observed_at"] for region in live_regions),
+        default=None,
+    )
+
+    if not regions:
+        briefing_text = "Ethiopia monitoring is waiting for administrative regions to be initialized."
+        priority = "No regions loaded"
+    elif not live_regions:
+        briefing_text = (
+            f"{len(regions)} Ethiopian administrative regions are loaded, but no live weather observations are available yet. "
+            "This dashboard provides preliminary weather screening, not official alerts."
+        )
+        priority = "Waiting for weather data"
     else:
-        briefing_text += "No regions currently meet the CRITICAL risk threshold. Global baseline remains within standard deviation. "
-    
-    briefing_text += f"Total active alerts: {len(active_alerts)}. Tactical teams should focus on logistics pre-positioning in highly reactive sectors."
+        if critical_regions:
+            names = ", ".join(region["region"] for region in critical_regions)
+            condition = f"The local weather-screening model flags {len(critical_regions)} regions as critical: {names}."
+        else:
+            condition = "No region currently meets the local model's critical weather-screening threshold."
+        briefing_text = (
+            f"Live Open-Meteo observations are available for {len(live_regions)} of {len(regions)} Ethiopian regions. "
+            f"{condition} Latest observation: {latest_observation}. "
+            "This is preliminary weather screening, not an official forecast or emergency alert."
+        )
+        highest_region = max(regions, key=lambda region: region["risk_score"])
+        priority = f"{highest_region['region']}: {highest_region['risk_level']} weather screening"
 
     return {
         "timestamp": datetime.utcnow().isoformat(),
         "briefing_narrative": briefing_text,
-        "priority_vulnerability": "Food Chain Integrity",
-        "recommended_action": "Enable WebSocket command links for Field Officers",
+        "priority_vulnerability": priority,
+        "recommended_action": "Review current Open-Meteo observations and local screening indicators",
         "security_level": "LEVEL 4 ENCRYPTION ACTIVE"
     }
