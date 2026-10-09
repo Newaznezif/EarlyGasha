@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { useAuth } from './AuthContext';
-import { Globe, ShieldAlert, Lock, Mail, CheckCircle } from 'lucide-react';
+import { ShieldAlert, Lock, Mail, CheckCircle } from 'lucide-react';
 import GoogleSignInButton from './GoogleSignInButton';
+import AuthLayout from './AuthLayout';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -69,86 +70,76 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0a0c] flex flex-col items-center justify-center p-4">
-      <div className="w-full max-w-md space-y-8 glass-card p-10 border border-[#1e1e24] shadow-2xl">
-        <div className="flex flex-col items-center text-center">
-          <Globe className="text-[#3b82f6] w-12 h-12 mb-4" />
-          <h1 className="text-3xl font-black text-white tracking-tighter">SIGN <span className="text-[#3b82f6]">IN</span></h1>
-          <p className="text-[10px] uppercase font-bold tracking-[0.2em] text-[#64748b] mt-2">Access your account</p>
-        </div>
-
+    <AuthLayout title="Sign in" description="Access your EarlyGasha account.">
+      <div className="space-y-5">
         {error && (
-          <div className="bg-red-500/10 border border-red-500/30 p-4 rounded-xl flex items-center gap-3 text-red-500 text-xs font-bold animate-shake">
-            <ShieldAlert className="w-5 h-5 flex-shrink-0" />
+          <div role="alert" className="flex items-start gap-3 rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-800">
+            <ShieldAlert className="h-5 w-5 flex-shrink-0" />
             <span>{error}</span>
           </div>
         )}
 
         {successMessage && !error && (
-          <div className="bg-emerald-500/10 border border-emerald-500/30 p-4 rounded-xl flex items-center gap-3 text-emerald-500 text-xs font-bold animate-pulse">
-            <CheckCircle className="w-5 h-5 flex-shrink-0" />
+          <div role="status" className="flex items-start gap-3 rounded-md border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-800">
+            <CheckCircle className="h-5 w-5 flex-shrink-0" />
             <span>{successMessage}</span>
           </div>
         )}
 
-        <div className="space-y-5">
-          <GoogleSignInButton
-            onCredential={handleGoogleSignIn}
-            onError={() => setError('Google sign-in failed. Please try again.')}
-          />
-          <div className="relative flex items-center">
-            <div className="w-full border-t border-[#1e1e24]" />
-            <span className="absolute left-1/2 -translate-x-1/2 bg-[#0a0a0c] px-3 text-xs text-[#64748b]">or sign in with email</span>
-          </div>
+        <GoogleSignInButton
+          onCredential={handleGoogleSignIn}
+          onError={() => setError('Google sign-in failed. Please try again.')}
+        />
+        <div className="relative flex items-center py-1">
+          <div className="w-full border-t border-edge" />
+          <span className="absolute left-1/2 -translate-x-1/2 bg-element px-3 text-xs text-muted">or continue with email</span>
         </div>
 
-        <form onSubmit={handleLogin} className="space-y-6">
-          <div className="space-y-2">
-            <label className="text-[10px] font-black uppercase tracking-widest text-[#64748b]">Email address</label>
-            <div className="relative">
-              <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#64748b]" />
-              <input 
-                type="email" 
-                required
-                placeholder="you@example.com"
-                className="w-full bg-[#16161a] border border-[#1e1e24] p-4 pl-12 rounded-xl text-white text-sm focus:outline-none focus:border-[#3b82f6] transition-all placeholder:text-[#3a3a41]"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </div>
+        <form onSubmit={handleLogin} className="space-y-4">
+          <div className="space-y-1.5">
+            <label htmlFor="login-email" className="block text-sm font-medium text-default">Email address</label>
+            <input
+              id="login-email"
+              type="email"
+              required
+              autoComplete="email"
+              placeholder="you@example.com"
+              className="w-full rounded-md border border-edge bg-element px-3 py-2.5 text-sm text-default placeholder:text-muted focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/15"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
           </div>
 
-          <div className="space-y-2">
-            <label className="text-[10px] font-black uppercase tracking-widest text-[#64748b]">Password</label>
-            <div className="relative">
-              <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#64748b]" />
-              <input 
-                type="password" 
-                required
-                placeholder="••••••••"
-                className="w-full bg-[#16161a] border border-[#1e1e24] p-4 pl-12 rounded-xl text-white text-sm focus:outline-none focus:border-[#3b82f6] transition-all placeholder:text-[#3a3a41]"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </div>
+          <div className="space-y-1.5">
+            <label htmlFor="login-password" className="block text-sm font-medium text-default">Password</label>
+            <input
+              id="login-password"
+              type="password"
+              required
+              autoComplete="current-password"
+              placeholder="Enter your password"
+              className="w-full rounded-md border border-edge bg-element px-3 py-2.5 text-sm text-default placeholder:text-muted focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/15"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
           </div>
 
-          <button 
-            type="submit" 
+          <button
+            type="submit"
             disabled={isLoading}
-            className="w-full bg-[#3b82f6] hover:bg-[#2563eb] text-white font-black py-4 rounded-xl transition-all uppercase tracking-widest text-xs shadow-lg shadow-blue-500/20 disabled:opacity-50"
+            className="w-full rounded-md bg-primary px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60"
           >
             {isLoading ? 'Signing in...' : 'Sign in'}
           </button>
         </form>
 
-        <div className="text-center pt-4 border-t border-[#1e1e24]">
-          <p className="text-xs text-[#64748b] font-medium">
-            Don't have an account? <Link to="/register" className="text-[#3b82f6] hover:underline font-bold">Create account</Link>
+        <div className="border-t border-edge pt-4">
+          <p className="text-sm text-muted">
+            New to EarlyGasha? <Link to="/register" className="font-medium text-primary hover:underline">Create an account</Link>
           </p>
         </div>
       </div>
-    </div>
+    </AuthLayout>
   );
 };
 

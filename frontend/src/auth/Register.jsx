@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from './AuthContext';
-import { Globe, UserPlus, ShieldAlert, Lock, Mail } from 'lucide-react';
+import { ShieldAlert } from 'lucide-react';
 import GoogleSignInButton from './GoogleSignInButton';
+import AuthLayout from './AuthLayout';
 
 const Register = () => {
   const [email, setEmail] = useState('');
@@ -69,107 +70,95 @@ const Register = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0a0c] flex flex-col items-center justify-center p-4">
-      <div className="w-full max-w-md space-y-8 glass-card p-10 border border-[#1e1e24] shadow-2xl">
-        <div className="flex flex-col items-center text-center">
-          <Globe className="text-[#3b82f6] w-12 h-12 mb-4" />
-          <h1 className="text-3xl font-black text-white tracking-tighter">CREATE <span className="text-[#3b82f6]">ACCOUNT</span></h1>
-          <p className="text-[10px] uppercase font-bold tracking-[0.2em] text-[#64748b] mt-2">Register for an account</p>
-        </div>
-
+    <AuthLayout title="Create your account" description="Register to access Ethiopia regional monitoring.">
+      <div className="space-y-5">
         {error && (
-          <div className="bg-red-500/10 border border-red-500/30 p-4 rounded-xl flex items-center gap-3 text-red-500 text-xs font-bold animate-shake">
-            <ShieldAlert className="w-5 h-5 flex-shrink-0" />
+          <div role="alert" className="flex items-start gap-3 rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-800">
+            <ShieldAlert className="h-5 w-5 flex-shrink-0" />
             <span>{error}</span>
           </div>
         )}
 
-        <div className="space-y-5">
-          <GoogleSignInButton
-            onCredential={handleGoogleSignIn}
-            onError={() => setError('Google sign-in failed. Please try again.')}
-          />
-          <div className="relative flex items-center">
-            <div className="w-full border-t border-[#1e1e24]" />
-            <span className="absolute left-1/2 -translate-x-1/2 bg-[#0a0a0c] px-3 text-xs text-[#64748b]">or create an account with email</span>
-          </div>
+        <GoogleSignInButton
+          onCredential={handleGoogleSignIn}
+          onError={() => setError('Google sign-in failed. Please try again.')}
+        />
+        <div className="relative flex items-center py-1">
+          <div className="w-full border-t border-edge" />
+          <span className="absolute left-1/2 -translate-x-1/2 bg-element px-3 text-xs text-muted">or register with email</span>
         </div>
 
-        <form onSubmit={handleRegister} className="space-y-4">
-          <div className="space-y-1">
-            <label className="text-[10px] font-black uppercase tracking-widest text-[#64748b]">Email address</label>
-            <div className="relative">
-              <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#64748b]" />
-              <input 
-                type="email" 
-                required
-                className="w-full bg-[#16161a] border border-[#1e1e24] p-4 pl-12 rounded-xl text-white text-sm focus:outline-none focus:border-[#3b82f6] transition-all"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </div>
+        <form onSubmit={handleRegister} className="space-y-3.5">
+          <div className="space-y-1.5">
+            <label htmlFor="register-email" className="block text-sm font-medium text-default">Email address</label>
+            <input
+              id="register-email"
+              type="email"
+              required
+              autoComplete="email"
+              placeholder="you@example.com"
+              className="w-full rounded-md border border-edge bg-element px-3 py-2.5 text-sm text-default placeholder:text-muted focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/15"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
           </div>
 
-          <div className="space-y-1">
-            <label className="text-[10px] font-black uppercase tracking-widest text-[#64748b]">Password</label>
-            <div className="relative">
-              <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#64748b]" />
-              <input 
-                type="password" 
-                required
-                className="w-full bg-[#16161a] border border-[#1e1e24] p-4 pl-12 rounded-xl text-white text-sm focus:outline-none focus:border-[#3b82f6] transition-all"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </div>
+          <div className="space-y-1.5">
+            <label htmlFor="register-password" className="block text-sm font-medium text-default">Password</label>
+            <input
+              id="register-password"
+              type="password"
+              required
+              autoComplete="new-password"
+              className="w-full rounded-md border border-edge bg-element px-3 py-2.5 text-sm text-default focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/15"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
           </div>
 
-          <div className="space-y-1">
-            <label className="text-[10px] font-black uppercase tracking-widest text-[#64748b]">Confirm password</label>
-            <div className="relative">
-              <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#64748b]" />
-              <input 
-                type="password" 
-                required
-                className="w-full bg-[#16161a] border border-[#1e1e24] p-4 pl-12 rounded-xl text-white text-sm focus:outline-none focus:border-[#3b82f6] transition-all"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-              />
-            </div>
+          <div className="space-y-1.5">
+            <label htmlFor="register-confirm-password" className="block text-sm font-medium text-default">Confirm password</label>
+            <input
+              id="register-confirm-password"
+              type="password"
+              required
+              autoComplete="new-password"
+              className="w-full rounded-md border border-edge bg-element px-3 py-2.5 text-sm text-default focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/15"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+            />
           </div>
 
-          <div className="space-y-1">
-            <label className="text-[10px] font-black uppercase tracking-widest text-[#64748b]">Account type</label>
-            <div className="relative">
-              <UserPlus className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#64748b]" />
-              <select 
-                className="w-full bg-[#16161a] border border-[#1e1e24] p-4 pl-12 rounded-xl text-white text-sm focus:outline-none focus:border-[#3b82f6] transition-all appearance-none"
-                value={role}
-                onChange={(e) => setRole(e.target.value)}
-              >
-                <option value="institutional_user">Institutional User (NGO/Gov)</option>
-                <option value="field_officer">Field Officer (Ground Reporting)</option>
-                <option value="community_user">Community User (Alerts Only)</option>
-              </select>
-            </div>
+          <div className="space-y-1.5">
+            <label htmlFor="register-role" className="block text-sm font-medium text-default">Account type</label>
+            <select
+              id="register-role"
+              className="w-full rounded-md border border-edge bg-element px-3 py-2.5 text-sm text-default focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/15"
+              value={role}
+              onChange={(e) => setRole(e.target.value)}
+            >
+              <option value="institutional_user">Institutional User (NGO/Gov)</option>
+              <option value="field_officer">Field Officer (Ground Reporting)</option>
+              <option value="community_user">Community User (Alerts Only)</option>
+            </select>
           </div>
 
-          <button 
-            type="submit" 
+          <button
+            type="submit"
             disabled={isLoading}
-            className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-black py-4 rounded-xl transition-all uppercase tracking-widest text-xs shadow-lg shadow-emerald-500/20 disabled:opacity-50 mt-4"
+            className="mt-2 w-full rounded-md bg-primary px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60"
           >
             {isLoading ? 'Creating account...' : 'Create account'}
           </button>
         </form>
 
-        <div className="text-center pt-4 border-t border-[#1e1e24]">
-          <p className="text-xs text-[#64748b] font-medium">
-            Already have an account? <Link to="/login" className="text-[#3b82f6] hover:underline font-bold">Sign in</Link>
+        <div className="border-t border-edge pt-4">
+          <p className="text-sm text-muted">
+            Already have an account? <Link to="/login" className="font-medium text-primary hover:underline">Sign in</Link>
           </p>
         </div>
       </div>
-    </div>
+    </AuthLayout>
   );
 };
 
