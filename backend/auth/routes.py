@@ -1,14 +1,20 @@
+import os
+import secrets
 from fastapi import APIRouter, Depends, HTTPException, status, Request
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from pydantic import BaseModel, EmailStr
-from typing import Optional
+from typing import Literal, Optional
+from google.auth.exceptions import GoogleAuthError
+from google.auth.transport import requests as google_requests
+from google.oauth2 import id_token
 from backend.auth.database import get_db
 from backend.auth.models import User, UserSession
 from backend.auth.security import get_password_hash, verify_password, create_access_token
 from backend.auth.dependencies import get_current_user, require_admin
 
 router = APIRouter()
+GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
 
 class UserCreate(BaseModel):
     email: str
@@ -31,6 +37,40 @@ class ProfileUpdate(BaseModel):
     full_name: Optional[str] = None
     bio: Optional[str] = None
     password: Optional[str] = None
+
+class GoogleAuthRequest(BaseModel):
+    credential: str
+    role: Literal["institutional_user", "field_officer", "community_user"] = "institutional_user"
+
+def _create_auth_response(user: User, request: Request, db: Session, event_type: str):
+    access_token = create_access_token(
+        data={"user_id": user.id, "role": user.role}
+    )
+
+    try:
+        import uuid
+        client_host = getattr(request.client, "host", "127.0.0.1")
+        new_session = UserSession(
+            user_id=user.id,
+            token_id=str(uuid.uuid4()),
+            ip_address=client_host,
+            user_agent=request.headers.get("user-agent", "Unknown")
+        )
+        db.add(new_session)
+        db.commit()
+
+        from backend.app.api.audit_routes import log_event
+        log_event(db, event_type, user.email, f"User session established from {client_host}")
+    except Exception as e:
+        print(f"SESSION LOGGING ERROR (Non-Critical): {e}")
+
+    return {
+        "token": access_token,
+        "user": {
+            "email": user.email,
+            "role": user.role
+        }
+    }
 
 @router.post("/register", response_model=UserResponse)
 def register(user_data: UserCreate, db: Session = Depends(get_db)):
@@ -72,35 +112,42 @@ def login(request: Request, form_data: OAuth2PasswordRequestForm = Depends(), db
             headers={"WWW-Authenticate": "Bearer"},
         )
     
-    access_token = create_access_token(
-        data={"user_id": user.id, "role": user.role}
-    )
+    return _create_auth_response(user, request, db, "TACTICAL_UPLINK")
 
-    # Record Session (Fail-safe)
+@router.post("/google")
+def google_login(auth_data: GoogleAuthRequest, request: Request, db: Session = Depends(get_db)):
+    if not GOOGLE_CLIENT_ID:
+        raise HTTPException(status_code=503, detail="Google sign-in is not configured")
+
     try:
-        import uuid
-        client_host = getattr(request.client, "host", "127.0.0.1")
-        new_session = UserSession(
-            user_id=user.id,
-            token_id=str(uuid.uuid4()),
-            ip_address=client_host,
-            user_agent=request.headers.get("user-agent", "Unknown")
+        claims = id_token.verify_oauth2_token(
+            auth_data.credential,
+            google_requests.Request(),
+            audience=GOOGLE_CLIENT_ID,
         )
-        db.add(new_session)
-        db.commit()
-        
-        from backend.app.api.audit_routes import log_event
-        log_event(db, "TACTICAL_UPLINK", user.email, f"Operator session established from {client_host}")
-    except Exception as e:
-        print(f"SESSION LOGGING ERROR (Non-Critical): {e}")
+    except ValueError as exc:
+        raise HTTPException(status_code=401, detail="Invalid Google credential") from exc
+    except GoogleAuthError as exc:
+        raise HTTPException(status_code=503, detail="Google sign-in is temporarily unavailable") from exc
 
-    return {
-        "token": access_token, 
-        "user": {
-            "email": user.email,
-            "role": user.role
-        }
-    }
+    email = claims.get("email")
+    if not email or claims.get("email_verified") is not True:
+        raise HTTPException(status_code=401, detail="A verified Google email is required")
+
+    email = email.strip().lower()
+    user = db.query(User).filter(User.email == email).first()
+    if user is None:
+        user = User(
+            email=email,
+            hashed_password=get_password_hash(secrets.token_urlsafe(32)),
+            role=auth_data.role,
+            full_name=claims.get("name"),
+        )
+        db.add(user)
+        db.commit()
+        db.refresh(user)
+
+    return _create_auth_response(user, request, db, "GOOGLE_SIGN_IN")
 
 @router.get("/me", response_model=UserResponse)
 def get_me(current_user: User = Depends(get_current_user)):

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from './AuthContext';
 import { Globe, UserPlus, ShieldAlert, Lock, Mail } from 'lucide-react';
+import GoogleSignInButton from './GoogleSignInButton';
 
 const Register = () => {
   const [email, setEmail] = useState('');
@@ -11,13 +12,13 @@ const Register = () => {
   const [role, setRole] = useState('institutional_user');
   const [isLoading, setIsLoading] = useState(false);
   
-  const { register } = useAuth();
+  const { register, googleLogin } = useAuth();
   const navigate = useNavigate();
 
   const handleRegister = async (e) => {
     e.preventDefault();
     if (password !== confirmPassword) return setError("Passwords do not match.");
-    if (password.length < 6) return setError("Complexity failure: Password must exceed 6 characters.");
+    if (password.length < 6) return setError("Password must be at least 6 characters.");
     
     setIsLoading(true);
     setError(null);
@@ -27,12 +28,12 @@ const Register = () => {
       setIsLoading(false);
       // Redirect to login after success as per requirements
       navigate('/login', { 
-        state: { message: "Account Provisioned. You may now authorize access using your new credentials." } 
+        state: { message: "Your account has been created. You can now sign in." }
       });
     } catch (err) {
       console.error(err);
       const detail = err.response?.data?.detail;
-      let errorMsg = "Identity Provisioning Failed. Protocol violation.";
+      let errorMsg = "Unable to create your account. Please try again.";
       
       if (typeof detail === 'string') {
         errorMsg = detail;
@@ -52,13 +53,28 @@ const Register = () => {
     }
   };
 
+  const handleGoogleSignIn = async (credential) => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const user = await googleLogin(credential, role);
+      if (user.role === 'system_admin') navigate('/admin');
+      else if (user.role === 'field_officer') navigate('/field');
+      else navigate('/dashboard');
+    } catch (err) {
+      setError(err.response?.data?.detail || 'Google sign-in failed. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#0a0a0c] flex flex-col items-center justify-center p-4">
       <div className="w-full max-w-md space-y-8 glass-card p-10 border border-[#1e1e24] shadow-2xl">
         <div className="flex flex-col items-center text-center">
           <Globe className="text-[#3b82f6] w-12 h-12 mb-4" />
-          <h1 className="text-3xl font-black text-white tracking-tighter">OPERATOR <span className="text-[#3b82f6]">SIGNUP</span></h1>
-          <p className="text-[10px] uppercase font-bold tracking-[0.2em] text-[#64748b] mt-2">Provision New Context</p>
+          <h1 className="text-3xl font-black text-white tracking-tighter">CREATE <span className="text-[#3b82f6]">ACCOUNT</span></h1>
+          <p className="text-[10px] uppercase font-bold tracking-[0.2em] text-[#64748b] mt-2">Register for an account</p>
         </div>
 
         {error && (
@@ -68,9 +84,20 @@ const Register = () => {
           </div>
         )}
 
+        <div className="space-y-5">
+          <GoogleSignInButton
+            onCredential={handleGoogleSignIn}
+            onError={() => setError('Google sign-in failed. Please try again.')}
+          />
+          <div className="relative flex items-center">
+            <div className="w-full border-t border-[#1e1e24]" />
+            <span className="absolute left-1/2 -translate-x-1/2 bg-[#0a0a0c] px-3 text-xs text-[#64748b]">or create an account with email</span>
+          </div>
+        </div>
+
         <form onSubmit={handleRegister} className="space-y-4">
           <div className="space-y-1">
-            <label className="text-[10px] font-black uppercase tracking-widest text-[#64748b]">Strategic Email</label>
+            <label className="text-[10px] font-black uppercase tracking-widest text-[#64748b]">Email address</label>
             <div className="relative">
               <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#64748b]" />
               <input 
@@ -84,7 +111,7 @@ const Register = () => {
           </div>
 
           <div className="space-y-1">
-            <label className="text-[10px] font-black uppercase tracking-widest text-[#64748b]">Identity Key</label>
+            <label className="text-[10px] font-black uppercase tracking-widest text-[#64748b]">Password</label>
             <div className="relative">
               <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#64748b]" />
               <input 
@@ -98,7 +125,7 @@ const Register = () => {
           </div>
 
           <div className="space-y-1">
-            <label className="text-[10px] font-black uppercase tracking-widest text-[#64748b]">Confirm Key</label>
+            <label className="text-[10px] font-black uppercase tracking-widest text-[#64748b]">Confirm password</label>
             <div className="relative">
               <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#64748b]" />
               <input 
@@ -112,7 +139,7 @@ const Register = () => {
           </div>
 
           <div className="space-y-1">
-            <label className="text-[10px] font-black uppercase tracking-widest text-[#64748b]">Operational Role</label>
+            <label className="text-[10px] font-black uppercase tracking-widest text-[#64748b]">Account type</label>
             <div className="relative">
               <UserPlus className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#64748b]" />
               <select 
@@ -132,13 +159,13 @@ const Register = () => {
             disabled={isLoading}
             className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-black py-4 rounded-xl transition-all uppercase tracking-widest text-xs shadow-lg shadow-emerald-500/20 disabled:opacity-50 mt-4"
           >
-            {isLoading ? 'Creating Account...' : 'Initiate Provisioning'}
+            {isLoading ? 'Creating account...' : 'Create account'}
           </button>
         </form>
 
         <div className="text-center pt-4 border-t border-[#1e1e24]">
           <p className="text-xs text-[#64748b] font-medium">
-            Already registered? <Link to="/login" className="text-[#3b82f6] hover:underline font-bold">Return to Login</Link>
+            Already have an account? <Link to="/login" className="text-[#3b82f6] hover:underline font-bold">Sign in</Link>
           </p>
         </div>
       </div>

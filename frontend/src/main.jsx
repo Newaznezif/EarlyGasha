@@ -4,13 +4,21 @@ import './index.css'
 import App from './App.jsx'
 import { ThemeProvider } from './context/ThemeContext'
 import { AuthProvider } from './auth/AuthContext'
+import { GoogleOAuthProvider } from '@react-oauth/google'
 
-createRoot(document.getElementById('root')).render(
+const application = (
   <StrictMode>
     <ThemeProvider>
       <AuthProvider>
         <App />
       </AuthProvider>
     </ThemeProvider>
-  </StrictMode>,
+  </StrictMode>
+)
+
+const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID
+createRoot(document.getElementById('root')).render(
+  googleClientId
+    ? <GoogleOAuthProvider clientId={googleClientId}>{application}</GoogleOAuthProvider>
+    : application,
 )

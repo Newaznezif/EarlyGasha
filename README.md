@@ -24,8 +24,11 @@ Use the existing Vercel project; do not create another project. Configure its pr
 - Build command: `npm run build`
 - Output directory: `dist`
 - Environment variable: `VITE_API_BASE_URL` set to the deployed FastAPI origin
+- Environment variable: `VITE_GOOGLE_CLIENT_ID` set to the Google OAuth web client ID
 
 `frontend/.env.example` contains a safe example value. Replace the example URL with the real API origin before production; do not use a Vite development server or localhost URL. No custom Vercel routing file is required for the current `HashRouter` routes.
+
+Configure a Google OAuth client in Google Cloud as a Web application. Add the local frontend origin (for example, `http://localhost:5173`) and the deployed frontend origin to its authorized JavaScript origins. Set its client ID as `VITE_GOOGLE_CLIENT_ID` in Vercel and as `GOOGLE_CLIENT_ID` in the backend host. The values must match. Google sign-in creates new accounts with the institutional user role unless a role is selected on the registration page.
 
 ## Backend
 

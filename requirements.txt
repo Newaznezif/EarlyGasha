@@ -8,6 +8,7 @@ pydantic
 pandas
 scikit-learn
 requests
+google-auth
 streamlit
 plotly
 geopandas

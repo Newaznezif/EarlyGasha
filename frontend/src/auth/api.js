@@ -38,6 +38,9 @@ export const authAPI = {
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
     });
   },
+  googleLogin: async (credential, role) => {
+    return api.post('/auth/google', { credential, role });
+  },
   register: async (email, password, role) => {
     return api.post('/auth/register', { email, password, role });
   },
