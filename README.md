@@ -47,7 +47,7 @@ Vercel's static frontend deployment does not deploy this FastAPI service or its 
 
 ### Render Backend Deployment
 
-The repository includes a Render Blueprint in `render.yaml`. In Render, create a Blueprint from this GitHub repository and connect it to a persistent PostgreSQL database before deploying. Add the database's internal connection URL as `DATABASE_URL`; Render will generate `SECRET_KEY`. The service allows the production Vercel origin through `CORS_ORIGINS` and checks `/health`. After deployment, copy the service's public HTTPS URL to Vercel as `VITE_API_BASE_URL`, then redeploy the frontend. The free web-service plan may sleep when idle, so the first API request can be delayed; verify current database pricing/retention before choosing a PostgreSQL provider.
+The repository includes a Render Blueprint in `render.yaml`. The Blueprint uses the free web-service plan and omits `DATABASE_URL`, so the backend uses its default SQLite database without a separate database charge. This is suitable for a no-cost demo only: Render's free service can sleep, and its filesystem is ephemeral, so database contents are not reliable across restarts or redeploys. The service allows the production Vercel origin through `CORS_ORIGINS`, Render generates `SECRET_KEY`, and `/health` is the health check. After deployment, copy the service's public HTTPS URL to Vercel as `VITE_API_BASE_URL`, then redeploy the frontend. For persistent production data, configure PostgreSQL separately and set `DATABASE_URL`; that may incur a charge.
 
 ## Validation
 
